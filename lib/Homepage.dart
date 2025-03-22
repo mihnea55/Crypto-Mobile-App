@@ -19,7 +19,7 @@ class _HomepageState extends State<Homepage> {
   List<dynamic> _coins = [];
   List<dynamic> _filteredCoins = [];
   bool _isLoading = true;
-  final String apiKey = '0e235564-4924-43b1-8988-93da39b38735'; // Replace with your API key
+  final String apiKey = '0e235564-4924-43b1-8988-93da39b38735';
 
   @override
   void initState() {
@@ -119,7 +119,7 @@ class _HomepageState extends State<Homepage> {
           return ListTile(
             leading: CircleAvatar(
               backgroundColor: Colors.white24,
-              backgroundImage: NetworkImage(logoUrl), // Load logo from URL
+              backgroundImage: NetworkImage(logoUrl),
             ),
             title: Text(
               coin['name'],

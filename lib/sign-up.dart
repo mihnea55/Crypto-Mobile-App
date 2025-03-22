@@ -113,7 +113,7 @@ class SignUp extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 15),
-              // Day, Month, Year dropdown for Date of Birth
+
               Row(
                 children: [
                   Expanded(

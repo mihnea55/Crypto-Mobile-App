@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';  // Add this to handle JSON
+import 'dart:convert';
 import 'CustomBottomNavBar.dart';
 import 'Homepage.dart';
-import 'main.dart'; // Import LoginPage
+import 'main.dart';
 
 class Profilepage extends StatefulWidget {
   Profilepage({super.key});
@@ -18,7 +18,7 @@ class _ProfilepageState extends State<Profilepage> {
   int _selectedIndex = 1;
   double _balance = 0.0;
   Map<String, Map<String, dynamic>> _ownedCoins = {};
-  Map<String, String> _coinLogos = {};  // To store the logos of the coins
+  Map<String, String> _coinLogos = {};
   List<dynamic> _coins = [];
   bool _isLoading = true;
 
@@ -27,7 +27,7 @@ class _ProfilepageState extends State<Profilepage> {
   @override
   void initState() {
     super.initState();
-    _fetchCoins().then((_) => _fetchOwnedCoins()); // Fetch owned coins only after coins data is available
+    _fetchCoins().then((_) => _fetchOwnedCoins());
     _fetchUserData();
   }
 
@@ -62,7 +62,6 @@ class _ProfilepageState extends State<Profilepage> {
   }
 
   void _fetchOwnedCoins() async {
-    // Ensure we have the latest coin data before proceeding
     if (_coins.isEmpty) {
       await _fetchCoins();
     }
@@ -83,7 +82,6 @@ class _ProfilepageState extends State<Profilepage> {
           String action = data['action'].toString().toLowerCase();
           String coinSymbol = data['symbol'] ?? 'N/A';
 
-          // Find the current price of the coin in USD from the _coins list
           double coinPriceUSD = 0.0;
           for (var coin in _coins) {
             if (coin['symbol'] == coinSymbol) {
@@ -101,7 +99,6 @@ class _ProfilepageState extends State<Profilepage> {
             };
           }
 
-          // Update the owned coins balance based on the transaction action
           if (action == 'buy') {
             ownedCoins[coinType]!['amount'] =
                 (ownedCoins[coinType]!['amount'] ?? 0.0) + amount;
@@ -110,12 +107,12 @@ class _ProfilepageState extends State<Profilepage> {
                 (ownedCoins[coinType]!['amount'] ?? 0.0) - amount;
           }
 
-          // Update the value in USD (amount of coin * coin price in USD)
+
           ownedCoins[coinType]!['valueInUSD'] =
               (ownedCoins[coinType]!['amount'] ?? 0.0) * coinPriceUSD;
         }
 
-        // Remove coins with zero or negative amounts
+
         ownedCoins.removeWhere((key, value) => value['amount']! <= 0);
 
         setState(() {
@@ -133,9 +130,8 @@ class _ProfilepageState extends State<Profilepage> {
     try {
       final response = await http.get(Uri.parse(url));
 
-      // Debugging step: Check if the response status is 200 (OK)
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);print('API Response: $data');  // Debugging step: Print the entire API response
+        final Map<String, dynamic> data = json.decode(response.body);print('API Response: $data');
 
         final List<dynamic> coinsList = data['data'];('Coins data fetched successfully: ${coinsList.length} coins');
 

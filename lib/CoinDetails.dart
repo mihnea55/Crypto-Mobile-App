@@ -35,7 +35,9 @@
           double amountOfCoin = transaction['amountOfCoin'];
           String action = transaction['action'];
 
-          print("Transaction found: " + action); // Debugging
+          print("Transaction found: " + action);
+
+
 
           if (action == 'buy') {
             totalAmountOwned += amountOfCoin;
@@ -52,16 +54,15 @@
           _amountOwnedInMoney = amountOwnedInMoney;
         });
 
-        print("Updated Amount Owned: $_amountOwned"); // Debugging
+        print("Updated Amount Owned: $_amountOwned");
         print("Updated Value in Money: $_amountOwnedInMoney");
       });
     }
 
-    // Function to handle Sell button press
     void _sellCrypto(BuildContext context) {
       TextEditingController amountController = TextEditingController();
 
-      // Show dialog to enter amount for selling the crypto
+
       showDialog(
         context: context,
         builder: (context) {
@@ -75,7 +76,7 @@
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context); // Close the dialog
+                  Navigator.pop(context);
                 },
                 child: Text("Cancel"),
               ),
@@ -95,15 +96,13 @@
                     return;
                   }
 
-                  // Get the current balance and owned amount of the coin
                   FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get().then((document) async {
                     if (document.exists) {
                       double currentBalance = document['balance'].toDouble();
 
-                      // Check the amount of crypto owned
+
                       double amountOwnedInCrypto = _amountOwned;
 
-                      // Check if the user has enough crypto to sell
                       if (amount > (amountOwnedInCrypto * widget.coin['quote']['USD']['price'])) {
                         Fluttertoast.showToast(
                           msg: "Insufficient crypto to sell.",
@@ -116,11 +115,9 @@
                         return;
                       }
 
-                      // Calculate the amount of coin to be sold (in crypto units)
                       double coinPrice = widget.coin['quote']['USD']['price'];
                       double amountOfCoinToSell = amount / coinPrice;
 
-                      // Check if the amount to sell is within the owned amount
                       if (amountOfCoinToSell > amountOwnedInCrypto) {
                         Fluttertoast.showToast(
                           msg: "You don't have enough crypto to sell.",
@@ -133,7 +130,7 @@
                         return;
                       }
 
-                      // Update the user's balance with the amount from the sale
+
                       double newBalance = currentBalance + amount;
                       await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
                         'balance': newBalance,
@@ -149,7 +146,6 @@
                         'timestamp': FieldValue.serverTimestamp(),
                       });
 
-                      // Update the amount owned after selling
                       setState(() {
                         _amountOwned -= amountOfCoinToSell;
                         _amountOwnedInMoney = _amountOwned * coinPrice;
@@ -175,7 +171,7 @@
                     }
                   });
 
-                  Navigator.pop(context); // Close the dialog
+                  Navigator.pop(context);
                 },
                 child: Text("Sell"),
               ),
@@ -187,13 +183,13 @@
     @override
     void didChangeDependencies() {
       super.didChangeDependencies();
-      _fetchAmountOwned(); // Re-fetch whenever dependencies change (e.g., page revisit)
+      _fetchAmountOwned();
     }
-    // Function to handle Buy button press
+
     void _buyCrypto(BuildContext context) {
       TextEditingController amountController = TextEditingController();
 
-      // Show dialog to enter amount for buying the crypto
+
       showDialog(
         context: context,
         builder: (context) {
@@ -207,7 +203,8 @@
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context); // Close the dialog
+                  Navigator.pop(context);
+
                 },
                 child: Text("Cancel"),
               ),
@@ -227,12 +224,11 @@
                     return;
                   }
 
-                  // Get the current balance from Firestore
+
                   FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get().then((document) async {
                     if (document.exists) {
                       double currentBalance = document['balance'].toDouble();
 
-                      // Check if the user has enough balance
                       if (amount > currentBalance) {
                         Fluttertoast.showToast(
                           msg: "Insufficient balance.",
@@ -245,17 +241,14 @@
                         return;
                       }
 
-                      // Calculate how much of the coin the user can buy
                       double coinPrice = widget.coin['quote']['USD']['price'];
                       double amountOfCoin = amount / coinPrice;
 
-                      // Deduct the amount from the balance
                       double newBalance = currentBalance - amount;
                       await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
                         'balance': newBalance,
                       });
 
-                      // Add the transaction to Firestore
                       await FirebaseFirestore.instance.collection('transactions').add({
                         'userId': FirebaseAuth.instance.currentUser!.uid,
                         'amountSpent': amount,
@@ -286,7 +279,7 @@
                     }
                   });
 
-                  Navigator.pop(context); // Close the dialog
+                  Navigator.pop(context);
                 },
                 child: Text("Buy"),
               ),
@@ -296,7 +289,6 @@
       );
     }
 
-    // Function to handle navigation tap on the bottom navigation bar
     void _onTap(int index) {
       if (index == 0) {
         Navigator.pushReplacement(
@@ -339,30 +331,31 @@
                 style: TextStyle(fontSize: 20, color: Colors.green),
               ),
               SizedBox(height: 10),
-              // Display the amount owned
+
               Text(
                 'Amount Owned: ${_amountOwned.toStringAsFixed(4)} ${widget.coin['symbol']}',
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
               SizedBox(height: 10),
-              // Display the value in real money
+
+
               Text(
                 'Value: \$${_amountOwnedInMoney.toStringAsFixed(2)}',
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
-              Spacer(), // This pushes the buttons to the bottom of the screen
+              Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      _buyCrypto(context); // Trigger Buy crypto function
+                      _buyCrypto(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green, // Green color for Buy button
+                      backgroundColor: Colors.green,
                       padding: EdgeInsets.symmetric(horizontal: 60, vertical: 20),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero, // No rounded corners
+                        borderRadius: BorderRadius.zero,
                       ),
                     ),
                     child: Text(
@@ -375,7 +368,7 @@
                       _sellCrypto(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, // Red color for Sell button
+                      backgroundColor: Colors.red,
                       padding: EdgeInsets.symmetric(horizontal: 60, vertical: 20),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.zero,
@@ -388,13 +381,13 @@
                   ),
                 ],
               ),
-              SizedBox(height: 20), // A little space at the bottom
+              SizedBox(height: 20),
             ],
           ),
         ),
         bottomNavigationBar: CustomBottomNavBar(
           selectedIndex: _selectedIndex,
-          onTap: _onTap, // Pass _onTap to the CustomBottomNavBar
+          onTap: _onTap,
         ),
       );
     }

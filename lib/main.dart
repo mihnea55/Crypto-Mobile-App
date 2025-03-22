@@ -33,24 +33,21 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  String errorMessage = '';  // To hold any error messages.
+  String errorMessage = '';
 
   Future<void> _login() async {
     try {
-      // Get the email and password from the user input
       String email = _emailController.text.trim();
       String password = _passwordController.text.trim();
 
-      // Sign in the user with Firebase Auth
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // Get the user instance
       User? user = userCredential.user;
 
-      // Check if the email is verified
+
       if (user != null && !user.emailVerified) {
         setState(() {
           errorMessage = 'Please verify your email first.';
@@ -139,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              // Display the error message if email is not verified
+
               if (errorMessage.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -152,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ElevatedButton(
-                onPressed: _login, // Call login method
+                onPressed: _login,
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                   backgroundColor: const Color(0xFF15EED2),

@@ -37,8 +37,6 @@ class CustomBottomNavBar extends StatelessWidget {
       ),
     );
   }
-
-  // Function to show the popup when the FAB is pressed
   void _showPopup(BuildContext context) {
     showDialog(
       context: context,
@@ -50,14 +48,14 @@ class CustomBottomNavBar extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context); // Close the popup
+                  Navigator.pop(context);
                   _showAmountDialog(context, "Add");
                 },
                 child: Text("Add"),
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context); // Close the popup
+                  Navigator.pop(context);
                   _showAmountDialog(context, "Withdraw");
                 },
                 child: Text("Withdraw"),
@@ -69,15 +67,13 @@ class CustomBottomNavBar extends StatelessWidget {
     );
   }
 
-  // Function to show the text field and buttons for Add/Withdraw
   void _showAmountDialog(BuildContext context, String action) {
     TextEditingController amountController = TextEditingController();
-    double currentBalance = 0.0;  // To store the current balance of the user.
+    double currentBalance = 0.0;
 
-    // Fetch the current balance from Firestore
     FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get().then((document) {
       if (document.exists) {
-        currentBalance = document['balance'].toDouble();  // Fetch the balance.
+        currentBalance = document['balance'].toDouble();
       }
     });
 
@@ -101,7 +97,7 @@ class CustomBottomNavBar extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context);
               },
               child: Text("Cancel"),
             ),
@@ -110,7 +106,6 @@ class CustomBottomNavBar extends StatelessWidget {
                 double amount = double.tryParse(amountController.text) ?? 0.0;
 
                 if (amount <= 0) {
-                  // Handle invalid input
                   Fluttertoast.showToast(
                     msg: "Please enter a valid amount.",
                     toastLength: Toast.LENGTH_SHORT,
@@ -123,7 +118,6 @@ class CustomBottomNavBar extends StatelessWidget {
                 }
 
                 if (action == "Withdraw") {
-                  // Check if balance is sufficient for withdrawal
                   if (amount > currentBalance) {
                     Fluttertoast.showToast(
                       msg: "Insufficient balance for withdrawal.",
@@ -136,7 +130,8 @@ class CustomBottomNavBar extends StatelessWidget {
                     return;
                   }
 
-                  // Deduct the amount from the balance
+
+
                   double newBalance = currentBalance - amount;
                   await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
                     'balance': newBalance,
@@ -151,7 +146,6 @@ class CustomBottomNavBar extends StatelessWidget {
                     fontSize: 14.0,
                   );
                 } else if (action == "Add") {
-                  // Add the amount to the balance
                   double newBalance = currentBalance + amount;
                   await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
                     'balance': newBalance,
@@ -167,7 +161,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   );
                 }
 
-                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context);
               },
               child: Text("Submit"),
             ),
